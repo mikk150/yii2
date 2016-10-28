@@ -323,7 +323,7 @@ class Menu extends Widget
                 unset($accessibleRoute['#']);
                 if (count($accessibleRoute) > 1) {
                     unset($accessibleRoute[0]);
-                    foreach ($$accessibleRoute as $name => $value) {
+                    foreach ($accessibleRoute as $name => $value) {
                         if ($value !== null && (!isset($this->params[$name]) || $this->params[$name] != $value)) {
                             return false;
                         }
