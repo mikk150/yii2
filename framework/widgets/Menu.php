@@ -58,6 +58,7 @@ class Menu extends Widget
      * - url: string or array, optional, specifies the URL of the menu item. It will be processed by [[Url::to]].
      *   When this is set, the actual menu item content will be generated using [[linkTemplate]];
      *   otherwise, [[labelTemplate]] will be used.
+     * - accessibleRoutes: other routes that should activate this menu item.
      * - visible: boolean, optional, whether this menu item is visible. Defaults to true.
      * - items: array, optional, specifies the sub-menu items. Its format is the same as the parent items.
      * - active: boolean, optional, whether this menu item is in active state (currently selected).
@@ -306,25 +307,30 @@ class Menu extends Widget
     protected function isItemActive($item)
     {
         if (isset($item['url']) && is_array($item['url']) && isset($item['url'][0])) {
-            $route = Yii::getAlias($item['url'][0]);
-            if ($route[0] !== '/' && Yii::$app->controller) {
-                $route = Yii::$app->controller->module->getUniqueId() . '/' . $route;
+            if (!isset($item['accessibleRoutes'])) {
+                $item['accessibleRoutes'] = [];
             }
-            if (ltrim($route, '/') !== $this->route) {
-                return false;
-            }
-            unset($item['url']['#']);
-            if (count($item['url']) > 1) {
-                $params = $item['url'];
-                unset($params[0]);
-                foreach ($params as $name => $value) {
-                    if ($value !== null && (!isset($this->params[$name]) || $this->params[$name] != $value)) {
-                        return false;
+            $item['accessibleRoutes'][] = $item['url'];
+
+            foreach ($item['accessibleRoutes'] as $accessibleRoute) {
+                $route = Yii::getAlias($accessibleRoute[0]);
+                if ($route[0] !== '/' && Yii::$app->controller) {
+                    $route = Yii::$app->controller->module->getUniqueId() . '/' . $route;
+                }
+                if (ltrim($route, '/') !== $this->route) {
+                    continue;
+                }
+                unset($accessibleRoute['#']);
+                if (count($accessibleRoute) > 1) {
+                    unset($accessibleRoute[0]);
+                    foreach ($$accessibleRoute as $name => $value) {
+                        if ($value !== null && (!isset($this->params[$name]) || $this->params[$name] != $value)) {
+                            return false;
+                        }
                     }
                 }
+                return true;
             }
-
-            return true;
         }
 
         return false;
