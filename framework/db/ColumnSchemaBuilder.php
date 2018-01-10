@@ -104,6 +104,7 @@ class ColumnSchemaBuilder extends BaseObject
         Schema::TYPE_BINARY => self::CATEGORY_OTHER,
         Schema::TYPE_BOOLEAN => self::CATEGORY_NUMERIC,
         Schema::TYPE_MONEY => self::CATEGORY_NUMERIC,
+        Schema::TYPE_JSON => self::CATEGORY_OTHER,
     ];
     /**
      * @var \yii\db\Connection the current database connection. It is used mainly to escape strings

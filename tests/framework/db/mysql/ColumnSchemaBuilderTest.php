@@ -44,6 +44,7 @@ class ColumnSchemaBuilderTest extends \yiiunit\framework\db\ColumnSchemaBuilderT
             ['integer(10) COMMENT \'test\'', Schema::TYPE_INTEGER, 10, [
                 ['comment', 'test'],
             ]],
+            ['json', Schema::TYPE_JSON, null, []],
         ];
     }
 }
