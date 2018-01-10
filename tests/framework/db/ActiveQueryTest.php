@@ -227,6 +227,12 @@ abstract class ActiveQueryTest extends DatabaseTestCase
         $this->assertEquals(['alias' => 'customer'], $result->from);
     }
 
+    public function testGettingTableAlias()
+    {
+        $query = new ActiveQuery(Customer::className());
+        $result = $query->alias('alias');
+    }
+
     public function testAlias_yet_set()
     {
         $aliasOld = ['old'];

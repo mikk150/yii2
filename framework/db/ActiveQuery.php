@@ -588,6 +588,26 @@ class ActiveQuery extends Query implements ActiveQueryInterface
     }
 
     /**
+     * Returns the primary table alias
+     *
+     * @return string The table name.
+     */
+    protected function getTableName()
+    {
+        return $this->getTableNameAndAlias()[0];
+    }
+
+    /**
+     * Returns the table alias.
+     *
+     * @return string The table alias.
+     */
+    protected function getTableAlias()
+    {
+        return $this->getTableNameAndAlias()[1];
+    }
+
+    /**
      * Joins a parent query with a child query.
      * The current query object will be modified accordingly.
      * @param ActiveQuery $parent
