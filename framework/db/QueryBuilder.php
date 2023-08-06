@@ -532,6 +532,11 @@ class QueryBuilder extends \yii\base\BaseObject
         throw new NotSupportedException($this->db->getDriverName() . ' does not support upsert statements.');
     }
 
+    public function batchUpsert($table, $insertColumns, $rows, $updateColumns, &$params)
+    {
+        throw new NotSupportedException($this->db->getDriverName() . ' does not support batchUpsert statements.');
+    }
+
     /**
      * @param string $table
      * @param array|Query $insertColumns

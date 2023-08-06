@@ -566,6 +566,13 @@ class Command extends Component
         return $this->setSql($sql)->bindValues($params);
     }
 
+    public function batchUpsert($table, $insertColumns, $rows, $updateColumns = true, $params = [])
+    {
+        $sql = $this->db->getQueryBuilder()->batchUpsert($table, $insertColumns, $rows, $updateColumns, $params);
+
+        return $this->setSql($sql)->bindValues($params);
+    }
+
     /**
      * Creates an UPDATE command.
      *

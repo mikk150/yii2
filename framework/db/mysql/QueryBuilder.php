@@ -276,6 +276,42 @@ class QueryBuilder extends \yii\db\QueryBuilder
         return [$names, $placeholders, $values, $params];
     }
 
+    public function batchUpsert($table, $insertColumns, $rows, $updateColumns, &$params)
+    {
+        $insertSql = $this->batchInsert($table, $insertColumns, $rows, $params);
+
+        if ($insertColumns instanceof Query) {
+            list($uniqueNames,, $updateNames) = $this->prepareUpsertColumns($table, $insertColumns, $updateColumns);
+        } else {
+            $preparedColumns = array_combine($insertColumns, $insertColumns);
+            $preparedUpdateColumns = $updateColumns;
+            if (!is_bool($updateColumns)) {
+                $preparedUpdateColumns = array_combine($preparedColumns, $preparedColumns);
+            }
+            list($uniqueNames,, $updateNames) = $this->prepareUpsertColumns($table, $preparedColumns, $preparedUpdateColumns);
+        }
+
+        if (empty($uniqueNames)) {
+            return $insertSql;
+        }
+        if ($updateNames === []) {
+            // there are no columns to update
+            $updateColumns = false;
+        }
+
+        if ($updateColumns === true) {
+            $updateColumns = [];
+            foreach ($updateNames as $name) {
+                $updateColumns[$name] = new Expression('VALUES(' . $this->db->quoteColumnName($name) . ')');
+            }
+        } elseif ($updateColumns === false) {
+            $name = $this->db->quoteColumnName(reset($uniqueNames));
+            $updateColumns = [$name => new Expression($this->db->quoteTableName($table) . '.' . $name)];
+        }
+        list($updates, $params) = $this->prepareUpdateSets($table, $updateColumns, $params);
+        return $insertSql . ' ON DUPLICATE KEY UPDATE ' . implode(', ', $updates);
+    }
+
     /**
      * {@inheritdoc}
      * @see https://downloads.mysql.com/docs/refman-5.1-en.pdf
